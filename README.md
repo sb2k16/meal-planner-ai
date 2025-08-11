@@ -1,23 +1,27 @@
-# Meal Planner Application
+# MealPlanner AI
 
-A comprehensive meal planning application that helps users manage recipes, calculate calories, and create weekly meal plans based on budget and nutritional requirements.
+A comprehensive AI-powered meal planning application that helps users manage recipes, calculate calories, and create weekly meal plans based on budget and nutritional requirements.
 
 ## Features
 
+- **AI Recipe Generation**: Generate recipes using OpenAI LLM
 - **Recipe Management**: Store and organize recipes by cuisine and ingredients
 - **Calorie Tracking**: Automatic calorie calculation using USDA FoodData Central API
-- **Web Scraping**: Extract recipes from public web pages
+- **Web Scraping**: Extract recipes from public web pages with AI processing
 - **Meal Planning**: Generate weekly meal plans based on budget, calories, and cooking time
 - **Multi-cuisine Support**: Organize recipes by different cuisines
 - **Ingredient Management**: Track ingredients with nutritional information
+- **Shopping Cart**: Manage shopping lists and meal planning
+- **User Preferences**: Personalized dietary and cuisine preferences
 
 ## Technology Stack
 
-- **Backend**: Go (Golang)
-- **Frontend**: React with TypeScript
-- **Database**: PostgreSQL
-- **APIs**: USDA FoodData Central API
-- **Web Scraping**: Custom Go implementation
+- **Backend**: Go (Golang) with Gin framework
+- **Frontend**: React with TypeScript and Material-UI
+- **Database**: PostgreSQL with GORM ORM
+- **APIs**: USDA FoodData Central API, OpenAI GPT-4
+- **AI Services**: Recipe generation, dietary analysis, instruction improvement
+- **Web Scraping**: Custom Go implementation with AI processing
 
 ## Project Structure
 
@@ -56,6 +60,17 @@ MealPlanner/
 - Node.js 18+
 - PostgreSQL 14+
 - Docker (optional)
+- OpenAI API key
+
+### Environment Variables
+Create a `.env` file in the root directory:
+```bash
+DATABASE_URL=postgres://username:password@localhost:5432/mealplanner?sslmode=disable
+USDA_API_KEY=your_usda_api_key
+OPENAI_API_KEY=your_openai_api_key
+PORT=8080
+ENVIRONMENT=development
+```
 
 ### Database Setup
 1. Create PostgreSQL database
@@ -76,9 +91,6 @@ npm install
 npm start
 ```
 
-### Environment Variables
-Create `.env` files in both backend and frontend directories with required configuration.
-
 ## API Documentation
 
 ### Recipes
@@ -87,6 +99,11 @@ Create `.env` files in both backend and frontend directories with required confi
 - `GET /api/recipes/{id}` - Get recipe by ID
 - `PUT /api/recipes/{id}` - Update recipe
 - `DELETE /api/recipes/{id}` - Delete recipe
+
+### AI Services
+- `POST /api/ai/generate-recipe` - Generate recipe using AI
+- `POST /api/ai/process-scraped` - Process scraped recipe with AI
+- `POST /api/ai/improve-instructions` - Improve recipe instructions
 
 ### Ingredients  
 - `GET /api/ingredients` - List all ingredients
@@ -103,4 +120,4 @@ Create `.env` files in both backend and frontend directories with required confi
 
 ## License
 
-MIT License 
+MIT License

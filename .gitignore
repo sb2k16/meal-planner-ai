@@ -56,4 +56,11 @@ coverage/
 
 # Temporary files
 tmp/
-temp/ 
+temp/
+
+# Go specific
+coverage.*
+*.coverprofile
+profile.cov
+go.work
+go.work.sum
