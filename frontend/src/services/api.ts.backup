@@ -1,0 +1,209 @@
+import axios, { AxiosResponse } from 'axios';
+import {
+  Recipe,
+  Ingredient,
+  Cuisine,
+  MealPlan,
+  MealPlanGenerationRequest,
+  ShoppingList,
+  RecipeTag,
+  UserPreferences,
+  RecipeFilters,
+  IngredientFilters,
+  USDAFoodSearchResponse,
+  ScrapedRecipe,
+  PaginatedResponse,
+  RecipeFormData,
+  IngredientFormData,
+} from '../types/index';
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+
+const api = axios.create({
+  baseURL: `${API_BASE_URL}/api`,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Request interceptor for auth (if needed in the future)
+api.interceptors.request.use((config) => {
+  // Add auth token here if implementing authentication
+  return config;
+});
+
+// Response interceptor for error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error('API Error:', error.response?.data || error.message);
+    return Promise.reject(error);
+  }
+);
+
+// Cuisine API
+export const cuisineAPI = {
+  getAll: (): Promise<AxiosResponse<Cuisine[]>> =>
+    api.get('/cuisines'),
+  
+  getById: (id: string): Promise<AxiosResponse<Cuisine>> =>
+    api.get(`/cuisines/${id}`),
+  
+  create: (data: Partial<Cuisine>): Promise<AxiosResponse<Cuisine>> =>
+    api.post('/cuisines', data),
+  
+  update: (id: string, data: Partial<Cuisine>): Promise<AxiosResponse<Cuisine>> =>
+    api.put(`/cuisines/${id}`, data),
+  
+  delete: (id: string): Promise<AxiosResponse<{ message: string }>> =>
+    api.delete(`/cuisines/${id}`),
+};
+
+// Ingredient API
+export const ingredientAPI = {
+  getAll: (filters?: IngredientFilters): Promise<AxiosResponse<PaginatedResponse<Ingredient>>> => {
+    const params = new URLSearchParams();
+    if (filters?.search) params.append('search', filters.search);
+    if (filters?.category) params.append('category', filters.category);
+    if (filters?.page) params.append('page', filters.page.toString());
+    if (filters?.limit) params.append('limit', filters.limit.toString());
+    
+    return api.get(`/ingredients?${params.toString()}`);
+  },
+  
+  getById: (id: string): Promise<AxiosResponse<Ingredient>> =>
+    api.get(`/ingredients/${id}`),
+  
+  create: (data: IngredientFormData): Promise<AxiosResponse<Ingredient>> =>
+    api.post('/ingredients', data),
+  
+  update: (id: string, data: Partial<Ingredient>): Promise<AxiosResponse<Ingredient>> =>
+    api.put(`/ingredients/${id}`, data),
+  
+  delete: (id: string): Promise<AxiosResponse<{ message: string }>> =>
+    api.delete(`/ingredients/${id}`),
+  
+  searchUSDA: (query: string, limit?: number): Promise<AxiosResponse<USDAFoodSearchResponse>> => {
+    const params = new URLSearchParams();
+    params.append('q', query);
+    if (limit) params.append('limit', limit.toString());
+    
+    return api.get(`/ingredients/search?${params.toString()}`);
+  },
+  
+  importFromUSDA: (fdcId: number): Promise<AxiosResponse<Ingredient>> =>
+    api.post('/ingredients/import-usda', { fdc_id: fdcId }),
+};
+
+// Recipe API
+export const recipeAPI = {
+  getAll: (filters?: RecipeFilters): Promise<AxiosResponse<PaginatedResponse<Recipe>>> => {
+    const params = new URLSearchParams();
+    if (filters?.search) params.append('search', filters.search);
+    if (filters?.cuisine_id) params.append('cuisine_id', filters.cuisine_id);
+    if (filters?.max_time) params.append('max_time', filters.max_time.toString());
+    if (filters?.max_calories) params.append('max_calories', filters.max_calories.toString());
+    if (filters?.page) params.append('page', filters.page.toString());
+    if (filters?.limit) params.append('limit', filters.limit.toString());
+    
+    return api.get(`/recipes?${params.toString()}`);
+  },
+  
+  getById: (id: string): Promise<AxiosResponse<Recipe>> =>
+    api.get(`/recipes/${id}`),
+  
+  create: (data: RecipeFormData): Promise<AxiosResponse<Recipe>> =>
+    api.post('/recipes', data),
+  
+  update: (id: string, data: Partial<Recipe>): Promise<AxiosResponse<Recipe>> =>
+    api.put(`/recipes/${id}`, data),
+  
+  delete: (id: string): Promise<AxiosResponse<{ message: string }>> =>
+    api.delete(`/recipes/${id}`),
+  
+  calculateNutrition: (id: string): Promise<AxiosResponse<{ message: string }>> =>
+    api.post(`/recipes/${id}/calculate-nutrition`),
+};
+
+// Recipe Tag API
+export const tagAPI = {
+  getAll: (): Promise<AxiosResponse<RecipeTag[]>> =>
+    api.get('/tags'),
+  
+  create: (data: Partial<RecipeTag>): Promise<AxiosResponse<RecipeTag>> =>
+    api.post('/tags', data),
+  
+  update: (id: string, data: Partial<RecipeTag>): Promise<AxiosResponse<RecipeTag>> =>
+    api.put(`/tags/${id}`, data),
+  
+  delete: (id: string): Promise<AxiosResponse<{ message: string }>> =>
+    api.delete(`/tags/${id}`),
+};
+
+// Meal Plan API
+export const mealPlanAPI = {
+  getAll: (): Promise<AxiosResponse<MealPlan[]>> =>
+    api.get('/meal-plans'),
+  
+  getById: (id: string): Promise<AxiosResponse<MealPlan>> =>
+    api.get(`/meal-plans/${id}`),
+  
+  create: (data: Partial<MealPlan>): Promise<AxiosResponse<MealPlan>> =>
+    api.post('/meal-plans', data),
+  
+  update: (id: string, data: Partial<MealPlan>): Promise<AxiosResponse<MealPlan>> =>
+    api.put(`/meal-plans/${id}`, data),
+  
+  delete: (id: string): Promise<AxiosResponse<{ message: string }>> =>
+    api.delete(`/meal-plans/${id}`),
+  
+  generate: (data: MealPlanGenerationRequest): Promise<AxiosResponse<MealPlan>> =>
+    api.post('/meal-plans/generate', data),
+};
+
+// Shopping List API
+export const shoppingListAPI = {
+  getAll: (): Promise<AxiosResponse<ShoppingList[]>> =>
+    api.get('/shopping-lists'),
+  
+  getById: (id: string): Promise<AxiosResponse<ShoppingList>> =>
+    api.get(`/shopping-lists/${id}`),
+  
+  create: (data: Partial<ShoppingList>): Promise<AxiosResponse<ShoppingList>> =>
+    api.post('/shopping-lists', data),
+  
+  update: (id: string, data: Partial<ShoppingList>): Promise<AxiosResponse<ShoppingList>> =>
+    api.put(`/shopping-lists/${id}`, data),
+  
+  delete: (id: string): Promise<AxiosResponse<{ message: string }>> =>
+    api.delete(`/shopping-lists/${id}`),
+};
+
+// Web Scraping API
+export const scrapingAPI = {
+  scrapeRecipe: (url: string): Promise<AxiosResponse<{
+    scraped_recipe: ScrapedRecipe;
+    suggested_recipe: Partial<Recipe>;
+  }>> =>
+    api.post('/scrape', { url }),
+};
+
+// User Preferences API
+export const preferencesAPI = {
+  getAll: (): Promise<AxiosResponse<UserPreferences[]>> =>
+    api.get('/preferences'),
+  
+  create: (data: Partial<UserPreferences>): Promise<AxiosResponse<UserPreferences>> =>
+    api.post('/preferences', data),
+  
+  update: (id: string, data: Partial<UserPreferences>): Promise<AxiosResponse<UserPreferences>> =>
+    api.put(`/preferences/${id}`, data),
+};
+
+// Health Check
+export const healthAPI = {
+  check: (): Promise<AxiosResponse<{ status: string; message: string }>> =>
+    api.get('/health'),
+};
+
+export default api; 
