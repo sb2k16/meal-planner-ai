@@ -37,7 +37,14 @@ func setup() {
 		return
 	}
 
-	gormDB, err := gorm.Open(postgres.Open(cfg.DatabaseURL), &gorm.Config{})
+	// PreferSimpleProtocol disables implicit prepared-statement caching, which is
+	// required when connecting through a transaction-mode pooler like Neon's
+	// PgBouncer endpoint (otherwise "prepared statement already exists" errors
+	// surface intermittently under concurrency).
+	gormDB, err := gorm.Open(postgres.New(postgres.Config{
+		DSN:                  cfg.DatabaseURL,
+		PreferSimpleProtocol: true,
+	}), &gorm.Config{})
 	if err != nil {
 		initErr = err
 		return
