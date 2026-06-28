@@ -9,6 +9,7 @@
     "@mui/icons-material": "^5.14.1",
     "@mui/material": "^5.14.1",
     "@mui/x-date-pickers": "^6.10.0",
+    "@popperjs/core": "^2.11.8",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
@@ -57,7 +58,6 @@
   },
   "proxy": "http://localhost:8080",
   "devDependencies": {
-    "@types/chart.js": "^2.9.41",
     "@types/node": "^24.0.3"
   }
 }
