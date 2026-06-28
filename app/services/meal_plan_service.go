@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"mealplanner/internal/models"
+	"mealplanner/app/models"
 	"gorm.io/gorm"
 )
 

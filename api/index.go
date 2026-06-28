@@ -19,9 +19,9 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"mealplanner/internal/api"
-	"mealplanner/internal/config"
-	"mealplanner/internal/services"
+	"mealplanner/app/api"
+	"mealplanner/app/config"
+	"mealplanner/app/services"
 )
 
 var (

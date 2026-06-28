@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"mealplanner/internal/models"
+	"mealplanner/app/models"
 )
 
 type RecipeLLMService struct {

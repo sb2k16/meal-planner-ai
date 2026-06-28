@@ -2,7 +2,7 @@ package services
 
 import (
 	"fmt"
-	"mealplanner/internal/models"
+	"mealplanner/app/models"
 )
 
 // NutritionService handles nutritional calculations for recipes

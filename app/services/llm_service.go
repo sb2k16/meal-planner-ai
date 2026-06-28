@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strings"
 	
-	"mealplanner/internal/models"
+	"mealplanner/app/models"
 )
 
 type LLMService struct {

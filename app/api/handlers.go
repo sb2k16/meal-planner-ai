@@ -12,8 +12,8 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 
-	"mealplanner/internal/models"
-	"mealplanner/internal/services"
+	"mealplanner/app/models"
+	"mealplanner/app/services"
 )
 
 type Handlers struct {

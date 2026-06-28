@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"mealplanner/internal/models"
+	"mealplanner/app/models"
 )
 
 type ScraperService struct {

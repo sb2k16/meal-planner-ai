@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"strings"
 
-	"mealplanner/internal/models"
+	"mealplanner/app/models"
 )
 
 type USDAService struct {
