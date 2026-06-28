@@ -2,8 +2,6 @@ module mealplanner
 
 go 1.23.0
 
-toolchain go1.24.4
-
 require (
 	github.com/PuerkitoBio/goquery v1.10.3
 	github.com/gin-contrib/cors v1.4.0
