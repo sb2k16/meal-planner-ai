@@ -7,6 +7,7 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -14,44 +15,46 @@ import (
 type StringArray []string
 
 func (sa StringArray) Value() (driver.Value, error) {
-	if len(sa) == 0 {
-		return nil, nil
-	}
-	return json.Marshal(sa)
+	// Encode as a PostgreSQL text[] literal (e.g. {a,b}). The column is a native
+	// text[] array, not JSON, so delegate to lib/pq's array codec.
+	return pq.StringArray(sa).Value()
 }
 
 func (sa *StringArray) Scan(value interface{}) error {
-	if value == nil {
-		*sa = StringArray{}
-		return nil
-	}
-	b, ok := value.([]byte)
-	if !ok {
-		return errors.New("cannot scan StringArray")
-	}
-	return json.Unmarshal(b, sa)
+	// pq handles both the []byte and string driver representations (the latter
+	// is what the simple query protocol used for Neon's pooler returns) and
+	// parses the PostgreSQL array literal into elements.
+	return (*pq.StringArray)(sa).Scan(value)
 }
 
 // UUIDArray is a custom type for PostgreSQL UUID array columns
 type UUIDArray []uuid.UUID
 
 func (ua UUIDArray) Value() (driver.Value, error) {
-	if len(ua) == 0 {
-		return nil, nil
+	// The column is a native uuid[] array. Render each UUID as text and let
+	// lib/pq build the PostgreSQL array literal.
+	strs := make(pq.StringArray, len(ua))
+	for i, id := range ua {
+		strs[i] = id.String()
 	}
-	return json.Marshal(ua)
+	return strs.Value()
 }
 
 func (ua *UUIDArray) Scan(value interface{}) error {
-	if value == nil {
-		*ua = UUIDArray{}
-		return nil
+	var strs pq.StringArray
+	if err := strs.Scan(value); err != nil {
+		return err
 	}
-	b, ok := value.([]byte)
-	if !ok {
-		return errors.New("cannot scan UUIDArray")
+	result := make(UUIDArray, 0, len(strs))
+	for _, s := range strs {
+		id, err := uuid.Parse(s)
+		if err != nil {
+			return err
+		}
+		result = append(result, id)
 	}
-	return json.Unmarshal(b, ua)
+	*ua = result
+	return nil
 }
 
 // Base model with common fields
@@ -365,8 +368,15 @@ func (j *JSONB) Scan(value interface{}) error {
 		*j = JSONB{}
 		return nil
 	}
-	b, ok := value.([]byte)
-	if !ok {
+	// The simple query protocol (used for Neon's pooler) returns jsonb as a
+	// string rather than []byte, so accept both.
+	var b []byte
+	switch v := value.(type) {
+	case []byte:
+		b = v
+	case string:
+		b = []byte(v)
+	default:
 		return errors.New("cannot scan JSONB")
 	}
 	return json.Unmarshal(b, j)

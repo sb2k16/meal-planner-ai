@@ -67,3 +67,4 @@ coverage.*
 profile.cov
 go.work
 go.work.sum
+.env*
