@@ -54,7 +54,9 @@ func (s *ScrapedRecipeService) GetPersonalizedRecommendations(userID string, fil
 	}
 	defer rows.Close()
 
-	var recommendations []models.PersonalizedRecommendation
+	// Initialize as an empty (non-nil) slice so an empty result serializes to
+	// [] rather than null, which the frontend treats as an array.
+	recommendations := []models.PersonalizedRecommendation{}
 	for rows.Next() {
 		var recipe models.ScrapedRecipeDB
 		err := rows.Scan(
@@ -102,7 +104,8 @@ func (s *ScrapedRecipeService) GetScrapedRecipes(filters models.RecommendationFi
 	}
 	defer rows.Close()
 
-	var recipes []models.ScrapedRecipeDB
+	// Empty (non-nil) slice so an empty result serializes to [] not null.
+	recipes := []models.ScrapedRecipeDB{}
 	for rows.Next() {
 		var recipe models.ScrapedRecipeDB
 		err := rows.Scan(
